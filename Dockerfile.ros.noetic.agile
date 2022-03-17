@@ -1,0 +1,58 @@
+#
+# this dockerfile roughly follows the 'Installing from source' from:
+#   http://wiki.ros.org/noetic/Installation/Source
+#
+#ARG BASE_IMAGE=nvcr.io/nvidia/l4t-base:r32.5.0
+#FROM ${BASE_IMAGE}
+FROM ros_noetic_open3d:1.0
+RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+
+ARG ROS_PKG=ros_base
+ENV ROS_DISTRO=noetic
+ENV ROS_ROOT=/opt/ros/${ROS_DISTRO}
+ENV ROS_PYTHON_VERSION=3
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+#WORKDIR /workspace
+#RUN source /opt/ros/${ROS_DISTRO}/setup.bash
+
+#installing catkin_tools
+
+#RUN sh \-c 'echo "deb http://packages.ros.org/ros/ubuntu `lsb_release -sc` main" \ > /etc/apt/sources.list.d/ros-latest.list'
+#RUN  wget http://packages.ros.org/ros.key -O - | sudo apt-key add -
+RUN apt-get update 
+RUN apt-get install -y --no-install-recommends python3-catkin-tools python3-osrf-pycommon python3-vcstool \
+ libqglviewer-dev-qt5 libzmqpp-dev libeigen3-dev libglfw3-dev libglm-dev libvulkan1 vulkan-utils gdb libsdl-image1.2-dev \ 
+ libsdl-dev ros-noetic-octomap ros-noetic-octomap-mapping ros-noetic-octomap-msgs ros-noetic-octomap-ros ros-noetic-octomap-rviz-plugins ros-noetic-octomap-server
+
+RUN apt-get install -y --no-install-recommends nvidia-cuda-toolkit 
+
+
+RUN source /opt/ros/noetic/setup.bash
+RUN export ROS_VERSION=noetic
+RUN mkdir agile_autonomy_ws
+RUN cd agile_autonomy_ws && \
+  export CATKIN_WS=./catkin_aa && \ 
+  mkdir -p $CATKIN_WS/src && \
+  cd $CATKIN_WS && \
+  catkin init && \ 
+# why NOT WORKINK ???
+  catkin config --extend /opt/ros/noetic && \ 
+  catkin config --merge-devel && \ 
+  catkin config --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-fdiagnostics-color && \ 
+  cd src 
+
+COPY ./src/ ./agile_autonomy_ws/catkin_aa/src
+
+
+
+
+#
+# setup entrypoint
+#
+#COPY ./packages/ros_entrypoint.sh /ros_entrypoint.sh
+RUN echo 'source /opt/ros/noetic/setup.bash' >> /root/.bashrc
+#ENTRYPOINT ["/ros_entrypoint.sh"]
+CMD ["bash"]
+WORKDIR /
