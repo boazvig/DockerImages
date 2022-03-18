@@ -14,6 +14,14 @@ ENV ROS_PYTHON_VERSION=3
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+
+
+# install gcc 7.5 and switch to it
+RUN apt-get update 
+RUN apt-get install -y --no-install-recommends   gcc-7 g++-7
+RUN update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 100
+RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 100
+
 #WORKDIR /workspace
 #RUN source /opt/ros/${ROS_DISTRO}/setup.bash
 
@@ -29,9 +37,11 @@ RUN apt-get install -y --no-install-recommends python3-catkin-tools python3-osrf
 RUN apt-get install -y --no-install-recommends nvidia-cuda-toolkit 
 
 
+COPY ./src/ ./agile_autonomy_ws/catkin_aa/src
+
+
 RUN source /opt/ros/noetic/setup.bash
 RUN export ROS_VERSION=noetic
-RUN mkdir agile_autonomy_ws
 RUN cd agile_autonomy_ws && \
   export CATKIN_WS=./catkin_aa && \ 
   mkdir -p $CATKIN_WS/src && \
@@ -41,9 +51,9 @@ RUN cd agile_autonomy_ws && \
   catkin config --extend /opt/ros/noetic && \ 
   catkin config --merge-devel && \ 
   catkin config --cmake-args -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS=-fdiagnostics-color && \ 
-  cd src 
+  catkin build
 
-COPY ./src/ ./agile_autonomy_ws/catkin_aa/src
+
 
 
 
