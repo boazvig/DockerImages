@@ -23,3 +23,9 @@ important installation remarks:
 3. 1 includes path to open3d instead of Open3D - fixed locally
 3. 2 compilation error for rviz visualization error - could be bacause of wrong open3d version - should be checked
 
+
+Building Docker.ros.noetic :
+sudo docker build . -f Dockerfile.ros.noetic -t ros_noetic_20.04:1.5
+Building Dockerfile.ros.noetic.cmake :
+sudo docker build . -f DDockerfile.ros.noetic.cmake -t ros_noetic_20.04_cmake:1.0
+
