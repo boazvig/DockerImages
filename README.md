@@ -32,5 +32,7 @@ Building Dockerfile.ros.noetic.cmake :
 
 sudo docker build . -f Dockerfile.ros.noetic.cmake -t ros_noetic_20.04_cmake:1.0
 
+Building gbplanner : see gbplanner wiki : 
+
 sudo docker build . -f Dockerfile.ros.noetic.gbplanner -t ros_noetic_20.04_gbplanner:1.0
 
